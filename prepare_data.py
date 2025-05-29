@@ -139,7 +139,16 @@ good_labels = (apogee_cat["TEFF"] / apogee_cat["TEFF_ERR"]) > 30
 good_labels &= apogee_cat["LOGG_ERR"] < 0.4
 good_labels &= apogee_cat["FE_H_ERR"] < 0.2
 
-apogee_cat = apogee_cat[good_labels]
+# Use the "Pristine Label" cuts from Laroche and Speagle closing stellar label gap paper
+pristine_labels = (apogee_cat["TEFF"] / apogee_cat["TEFF_ERR"]) > 100
+pristine_labels &= apogee_cat["LOGG_ERR"] < 0.1
+pristine_labels &= apogee_cat["FE_H_ERR"] < 0.05
+pristine_labels &= apogee_cat["FE_H"] < 0.5
+pristine_labels &= apogee_cat["FE_H"] >-2
+
+
+
+apogee_cat = apogee_cat[pristine_labels]
 # Save the cleaned data as parquet file
 apogee_cat.to_parquet(output_dir / "apogee_cleaned.parquet", index=False)
 print(f"Cleaned data saved to {output_dir / 'apogee_cleaned.parquet'}")

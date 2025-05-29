@@ -33,7 +33,7 @@ params = {
 plt.rcParams.update(params)
 
 
-def plot_kiel_scatter_density(teff_data, logg_data, feh_data, **kwargs):
+def plot_kiel_scatter_density(teff_data, logg_data, feh_data, scatter=False, **kwargs):
     """
     Plots a Kiel diagram (Teff vs. log g) using scatter_density, colored by a third quantity (e.g., Fe/H).
 
@@ -74,20 +74,30 @@ def plot_kiel_scatter_density(teff_data, logg_data, feh_data, **kwargs):
     figsize = kwargs.get("figsize", default_figsize)
 
     fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(1, 1, 1, projection="scatter_density")
+    if scatter:
+        ax = fig.add_subplot(1, 1, 1,)
+        scatter = ax.scatter(teff_data,
+            logg_data,
+            c=feh_data,
+            vmin=kwargs.get("vmin", -2),
+            vmax=kwargs.get("vmax", 0.5),
+    
+            cmap=kwargs.get("cmap", "viridis"),)
+    else:
+        ax = fig.add_subplot(1, 1, 1, projection="scatter_density")
 
-    density_map = ax.scatter_density(
-        teff_data,
-        logg_data,
-        c=feh_data,
-        vmin=kwargs.get("vmin", -2),
-        vmax=kwargs.get("vmax", 0.5),
-        dpi=kwargs.get("dpi", 120),
-        cmap=kwargs.get("cmap", "viridis"),
-    )
+        scatter = ax.scatter_density(
+            teff_data,
+            logg_data,
+            c=feh_data,
+            vmin=kwargs.get("vmin", -2),
+            vmax=kwargs.get("vmax", 0.5),
+            dpi=kwargs.get("dpi", 120),
+            cmap=kwargs.get("cmap", "viridis"),
+        )
 
     cbar = fig.colorbar(
-        density_map, ax=ax, label=kwargs.get("colorbar_label", "[Fe/H]")
+        scatter, ax=ax, label=kwargs.get("colorbar_label", "[Fe/H]")
     )
 
     ax.set_xlabel(kwargs.get("xlabel", "Effective Temperature (Teff) [K]"))
